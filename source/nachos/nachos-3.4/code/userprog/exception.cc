@@ -48,16 +48,121 @@
 //	are in machine.h.
 //----------------------------------------------------------------------
 
+// Input: - User space address (int) 
+// - Limit of buffer (int) 
+// Output:- Buffer (char*) 
+// Purpose: Copy buffer from User memory space to System memory space 
+char* User2System(int virtAddr, int limit)
+{
+    int i;// index 
+    int oneChar;
+    char* kernelBuf = NULL;
+    kernelBuf = new char[limit + 1];//need for terminal string 
+    if (kernelBuf == NULL)
+        return kernelBuf;
+    memset(kernelBuf, 0, limit + 1);
+    //printf("\n Filename u2s:"); 
+    for (i = 0; i < limit; i++)
+    {
+        machine->ReadMem(virtAddr + i, 1, &oneChar);
+        kernelBuf[i] = (char)oneChar;
+        //printf("%c",kernelBuf[i]); 
+        if (oneChar == 0)
+            break;
+    }
+    return kernelBuf;
+}
+
+// Input: - User space address (int) 
+// - Limit of buffer (int) 
+// - Buffer (char[]) 
+// Output:- Number of bytes copied (int) 
+// Purpose: Copy buffer from System memory space to User memory space 
+int System2User(int virtAddr, int len, char* buffer)
+{
+    if (len < 0) return -1;
+    if (len == 0)return len;
+    int i = 0;
+    int oneChar = 0;
+    do {
+        oneChar = (int)buffer[i];
+        machine->WriteMem(virtAddr + i, 1, oneChar);
+        i++;
+    } while (i < len && oneChar != 0);
+    return i;
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
+    switch (which) {
+    case NoException:
+        return;
+    case SyscallException:
+        switch (type) {
+        case SC_Halt:
+            DEBUG('a', "\n Shutdown, initiated by user program.");
+            printf("\n\n Shutdown, initiated by user program.");
+            interrupt->Halt();
+            break;
+            /*case SC_ReadNum:
 
-    if ((which == SyscallException) && (type == SC_Halt)) {
-	DEBUG('a', "Shutdown, initiated by user program.\n");
-   	interrupt->Halt();
-    } else {
-	printf("Unexpected user mode exception %d %d\n", which, type);
-	ASSERT(FALSE);
+            case SC_PrintNum:
+
+            case SC_ReadChar:
+
+            case SC_PrintChar:
+
+            case SC_RandomNum:
+
+            case SC_ReadString:
+
+            case SC_PrintString:*/
+
+        default:
+            printf("\n Unexpected user mode exception (%d %d)", which,
+                type);
+            interrupt->Halt();
+        }
+    case PageFaultException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case ReadOnlyException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case BusErrorException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case AddressErrorException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case OverflowException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case IllegalInstrException:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    case NumExceptionTypes:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        interrupt->Halt();
+        break;
+    default:
+        DEBUG('a', "\nERROR. Can not run this program.......");
+        printf("\nError. Can not run this program....... ");
+        break;
     }
 }

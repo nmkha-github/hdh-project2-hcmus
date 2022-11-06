@@ -30,6 +30,14 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
+
+//add new system call
+#define SC_Sub         43	
+#define SC_ReadInt     11
+#define SC_PrintInt    12
+#define SC_ReadChar    13
+#define SC_PrintChar   14
+
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos
@@ -122,7 +130,15 @@ void Fork(void (*func)());
 /* Yield the CPU to another runnable thread, whether in this address space 
  * or not. 
  */
-void Yield();		
+void Yield();
+
+//sub
+int Sub(int a, int b);	
+
+int ReadInt();	
+void PrintInt(int number);
+char ReadChar();
+void PrintChar(char ch);
 
 #endif /* IN_ASM */
 

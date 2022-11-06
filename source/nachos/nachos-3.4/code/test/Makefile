@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort
+all: halt shell matmult sort sub readint printint readchar printchar
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -65,3 +65,35 @@ matmult.o: matmult.c
 matmult: matmult.o start.o
 	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
 	../bin/coff2noff matmult.coff matmult
+
+sub.o: sub.c
+	$(CC) $(CFLAGS) -c sub.c
+sub: sub.o start.o
+	$(LD) $(LDFLAGS) start.o sub.o -o sub.coff
+	../bin/coff2noff sub.coff sub
+
+readint.o: readint.c
+	$(CC) $(CFLAGS) -c readint.c
+readint: readint.o start.o
+	$(LD) $(LDFLAGS) start.o readint.o -o readint.coff
+	../bin/coff2noff readint.coff readint
+
+printint.o: printint.c
+	$(CC) $(CFLAGS) -c printint.c
+printint: printint.o start.o
+	$(LD) $(LDFLAGS) start.o printint.o -o printint.coff
+	../bin/coff2noff printint.coff printint
+
+readchar.o: readchar.c
+	$(CC) $(CFLAGS) -c readchar.c
+readchar: readchar.o start.o
+	$(LD) $(LDFLAGS) start.o readchar.o -o readchar.coff
+	../bin/coff2noff readchar.coff readchar
+
+printchar.o: printchar.c
+	$(CC) $(CFLAGS) -c printchar.c
+printchar: printchar.o start.o
+	$(LD) $(LDFLAGS) start.o printchar.o -o printchar.coff
+	../bin/coff2noff printchar.coff printchar
+
+

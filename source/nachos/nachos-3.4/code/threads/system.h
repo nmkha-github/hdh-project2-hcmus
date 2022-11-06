@@ -49,4 +49,9 @@ extern SynchDisk   *synchDisk;
 extern PostOffice* postOffice;
 #endif
 
+//include synchcons.h
+#include "synchcons.h"
+/*declare ptrSynchConsole pointer*/
+extern SynchConsole* ptrSynchConsole;
+
 #endif // SYSTEM_H

@@ -36,6 +36,9 @@ PostOffice *postOffice;
 #endif
 
 
+/*define ptrSynchConsole pointer*/
+SynchConsole* ptrSynchConsole;
+
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup();
 
@@ -162,7 +165,10 @@ Initialize(int argc, char **argv)
 #ifdef NETWORK
     postOffice = new PostOffice(netname, rely, 10);
 #endif
+
+    ptrSynchConsole = new SynchConsole();
 }
+
 
 //----------------------------------------------------------------------
 // Cleanup
@@ -188,6 +194,8 @@ Cleanup()
     delete synchDisk;
 #endif
     
+    delete ptrSynchConsole;
+
     delete timer;
     delete scheduler;
     delete interrupt;

@@ -92,11 +92,6 @@ int System2User(int virtAddr, int len, char* buffer)
     return i;
 }
 
-//Di chuyen thanh ghi ve sau 4 byte de nap lenh ke tiep
-//Cac buoc:
-//B1: Ghi vao PrevPcReg <- gia tri PCReg hien tai
-//B2: Ghi vao PCReg hien tai <- gia tri NextPCReg
-//B3: Di chuyen thanh ghi ve sau 4 byte (ghi vao NextPCReg <- gia tri NextPCReg + 4)
 void Increase_ProgramCounter()
 {
 /*
@@ -114,6 +109,69 @@ void Increase_ProgramCounter()
     machine->WriteRegister(NextPCReg, pcAfter);
 }
 
+void Exception_ReadInt()
+{
+
+    const int maxlen = 11; // max len(int) = 11 do int: [-2147483648 , 2147483647]
+    char num_string[maxlen] = {0};
+    long long ret = 0;
+
+    for (int i = 0; i < maxlen; i++) {
+        char c = 0;
+        ptrSynchConsole->Read(&c,1);
+        if (c >= '0' && c <= '9'){
+		num_string[i] = c;
+	}
+        else{
+		if (i == 0 && c == '-'){
+			num_string[i] = c;
+		}
+        	else break;
+	}
+    }
+    int i = (num_string[0] == '-') ? 1 : 0;
+    while (i < maxlen && num_string[i] >= '0' && num_string[i] <= '9')
+        ret = ret*10 + num_string[i++] - '0';
+    ret = (num_string[0] == '-') ? (-ret) : ret;
+    machine->WriteRegister(2, (int)ret);
+}
+
+
+void Exception_PrintInt()
+{
+    int n = machine->ReadRegister(4);
+    const int maxlen = 11;
+    char num_string[maxlen] = {0};
+    int tmp[maxlen] = {0}, i = 0, j = 0;
+    if (n < 0) {
+        n = -n;
+        num_string[i++] = '-';
+    }
+    do {
+        tmp[j++] = n%10;
+        n /= 10;
+    } while (n);
+    while (j) 
+    	num_string[i++] = '0' + (char)tmp[--j];
+    ptrSynchConsole->Write(num_string,i);
+    machine->WriteRegister(2, 0);
+}
+
+
+void Exception_ReadChar()
+{
+    char ch = 0;
+    ptrSynchConsole->Read(&ch,1);
+    machine->WriteRegister(2, (int)ch);
+}
+
+void Exception_PrintChar()
+{
+    char ch = (char)machine->ReadRegister(4);
+    ptrSynchConsole->Write(&ch,1);
+    machine->WriteRegister(2, 0);
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -128,27 +186,39 @@ ExceptionHandler(ExceptionType which)
             printf("\n\n Shutdown, initiated by user program.");
             interrupt->Halt();
             break;
+	case SC_Sub:
+            int op1, op2, result;
+            op1 = machine->ReadRegister (4);
+            op2 = machine->ReadRegister (5);
+            result = op1 - op2;
+            machine->WriteRegister (2, result);
+            interrupt->Halt();
+            break;
         case SC_ReadInt:
+            Exception_ReadInt();
             Increase_ProgramCounter();
             break;
         case SC_PrintInt:
+            Exception_PrintInt();
             Increase_ProgramCounter();
             break;
         case SC_ReadChar:
+            Exception_ReadChar();
             Increase_ProgramCounter();
             break;
         case SC_PrintChar:
+            Exception_PrintChar();
             Increase_ProgramCounter();
             break;
-        case SC_RandomNum:
-            Increase_ProgramCounter();
-            break;
-        case SC_ReadString:
-            Increase_ProgramCounter();
-            break;
-        case SC_PrintString:
-            Increase_ProgramCounter();
-            break;
+        // case SC_RandomNum:
+        //     Increase_ProgramCounter();
+        //     break;
+        // case SC_ReadString:
+        //     Increase_ProgramCounter();
+        //     break;
+        // case SC_PrintString:
+        //     Increase_ProgramCounter();
+        //     break;
         default:
             printf("\n Unexpected user mode exception (%d %d)", which,
                 type);

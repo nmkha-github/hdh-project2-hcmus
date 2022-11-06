@@ -92,9 +92,14 @@ int System2User(int virtAddr, int len, char* buffer)
     return i;
 }
 
+//Di chuyen thanh ghi ve sau 4 byte de nap lenh ke tiep
+//Cac buoc:
+//B1: Ghi vao PrevPcReg <- gia tri PCReg hien tai
+//B2: Ghi vao PCReg hien tai <- gia tri NextPCReg
+//B3: Di chuyen thanh ghi ve sau 4 byte (ghi vao NextPCReg <- gia tri NextPCReg + 4)
 void Increase_ProgramCounter()
 {
-/*
+	/*
 	machine/mipssim.cc cuoi ham "void Machine::OneInstruction(Instruction *instr)"
 	
 	 // Advance program counters.
@@ -102,7 +107,7 @@ void Increase_ProgramCounter()
 							// are jumping into lala-land
 	    registers[PCReg] = registers[NextPCReg];
 	    registers[NextPCReg] = pcAfter;
-*/
+	*/
     int pcAfter = machine->ReadRegister(NextPCReg) + 4;
     machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
     machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));

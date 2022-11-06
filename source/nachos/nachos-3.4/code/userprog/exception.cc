@@ -117,12 +117,12 @@ void Increase_ProgramCounter()
 void Exception_ReadInt()
 {
 
-    const int maxlen = 11; // max len(int) = 11 do int: [-2147483648 , 2147483647]
+    const int maxlen = 11; // max len(int) = 11 do int: [-2147483648 , 2147483647] 
     char num_string[maxlen] = {0};
     long long ret = 0;
 
     for (int i = 0; i < maxlen; i++) {
-        char c = 0;
+        char c = 0; //biến lưu giá trị khi đọc từ console nhưng ở dạng char đọc từng ký tự
         ptrSynchConsole->Read(&c,1);
         if (c >= '0' && c <= '9'){
 		num_string[i] = c;
@@ -131,34 +131,40 @@ void Exception_ReadInt()
 		if (i == 0 && c == '-'){
 			num_string[i] = c;
 		}
-        	else break;
+        	else break; //nếu nó khác số hoặc dấu - thì dừng đọc
 	}
     }
     int i = (num_string[0] == '-') ? 1 : 0;
-    while (i < maxlen && num_string[i] >= '0' && num_string[i] <= '9')
+    while (i < maxlen && num_string[i] >= '0' && num_string[i] <= '9') //chuyển từng ký tự sang số
         ret = ret*10 + num_string[i++] - '0';
     ret = (num_string[0] == '-') ? (-ret) : ret;
     machine->WriteRegister(2, (int)ret);
 }
 
+void Exception_Halt()
+{
+    DEBUG('a', "\n Shutdown, initiated by user program.");
+    printf("\n\n Shutdown, initiated by user program.");
+    interrupt->Halt();
+}
 
 void Exception_PrintInt()
 {
-    int n = machine->ReadRegister(4);
-    const int maxlen = 11;
+    int n = machine->ReadRegister(4); //đọc số đã được gán sẵn
+    const int maxlen = 11; // giá trị độ dài tối đa kiểu int
     char num_string[maxlen] = {0};
     int tmp[maxlen] = {0}, i = 0, j = 0;
-    if (n < 0) {
-        n = -n;
-        num_string[i++] = '-';
+    if (n < 0) { //xử lý số âm
+        n = -n; //nếu âm chuyển về dương để xử lý
+        num_string[i++] = '-'; //chuỗi số xuất ra thêm dấu âm
     }
-    do {
-        tmp[j++] = n%10;
+    do { //chuyển số sang mảng int để dễ thao tác
+        tmp[j++] = n%10; 
         n /= 10;
     } while (n);
-    while (j) 
+    while (j) // chuyển mảng int sang char
     	num_string[i++] = '0' + (char)tmp[--j];
-    ptrSynchConsole->Write(num_string,i);
+    ptrSynchConsole->Write(num_string,i); //ghi ra màn hình char và độ dài mảng
     machine->WriteRegister(2, 0);
 }
 
@@ -166,14 +172,14 @@ void Exception_PrintInt()
 void Exception_ReadChar()
 {
     char ch = 0;
-    ptrSynchConsole->Read(&ch,1);
+    ptrSynchConsole->Read(&ch,1); // đọc 1 ký tự từ console
     machine->WriteRegister(2, (int)ch);
 }
 
 void Exception_PrintChar()
 {
-    char ch = (char)machine->ReadRegister(4);
-    ptrSynchConsole->Write(&ch,1);
+    char ch = (char)machine->ReadRegister(4); //lấy ký tự đã được gán sẵn
+    ptrSynchConsole->Write(&ch,1); // ghi 1 ký tự ra màn hình console
     machine->WriteRegister(2, 0);
 }
 
@@ -187,9 +193,7 @@ ExceptionHandler(ExceptionType which)
     case SyscallException:
         switch (type) {
         case SC_Halt:
-            DEBUG('a', "\n Shutdown, initiated by user program.");
-            printf("\n\n Shutdown, initiated by user program.");
-            interrupt->Halt();
+            Exception_Halt();
             break;
 	case SC_Sub:
             int op1, op2, result;

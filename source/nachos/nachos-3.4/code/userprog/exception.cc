@@ -92,6 +92,11 @@ int System2User(int virtAddr, int len, char* buffer)
     return i;
 }
 
+//Di chuyen thanh ghi ve sau 4 byte de nap lenh ke tiep
+//Cac buoc:
+//B1: Ghi vao PrevPcReg <- gia tri PCReg hien tai
+//B2: Ghi vao PCReg hien tai <- gia tri NextPCReg
+//B3: Di chuyen thanh ghi ve sau 4 byte (ghi vao NextPCReg <- gia tri NextPCReg + 4)
 void Increase_ProgramCounter()
 {
 /*

@@ -92,6 +92,23 @@ int System2User(int virtAddr, int len, char* buffer)
     return i;
 }
 
+void Increase_ProgramCounter()
+{
+/*
+	machine/mipssim.cc cuoi ham "void Machine::OneInstruction(Instruction *instr)"
+	
+	 // Advance program counters.
+	    registers[PrevPCReg] = registers[PCReg];	// for debugging, in case we
+							// are jumping into lala-land
+	    registers[PCReg] = registers[NextPCReg];
+	    registers[NextPCReg] = pcAfter;
+*/
+    int pcAfter = machine->ReadRegister(NextPCReg) + 4;
+    machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+    machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));
+    machine->WriteRegister(NextPCReg, pcAfter);
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -106,20 +123,27 @@ ExceptionHandler(ExceptionType which)
             printf("\n\n Shutdown, initiated by user program.");
             interrupt->Halt();
             break;
-            /*case SC_ReadNum:
-
-            case SC_PrintNum:
-
-            case SC_ReadChar:
-
-            case SC_PrintChar:
-
-            case SC_RandomNum:
-
-            case SC_ReadString:
-
-            case SC_PrintString:*/
-
+        case SC_ReadInt:
+            Increase_ProgramCounter();
+            break;
+        case SC_PrintInt:
+            Increase_ProgramCounter();
+            break;
+        case SC_ReadChar:
+            Increase_ProgramCounter();
+            break;
+        case SC_PrintChar:
+            Increase_ProgramCounter();
+            break;
+        case SC_RandomNum:
+            Increase_ProgramCounter();
+            break;
+        case SC_ReadString:
+            Increase_ProgramCounter();
+            break;
+        case SC_PrintString:
+            Increase_ProgramCounter();
+            break;
         default:
             printf("\n Unexpected user mode exception (%d %d)", which,
                 type);

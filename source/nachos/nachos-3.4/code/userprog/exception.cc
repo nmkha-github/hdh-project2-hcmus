@@ -183,6 +183,35 @@ void Exception_PrintChar()
     machine->WriteRegister(2, 0);
 }
 
+void Exception_ReadString()
+{
+	int virtAddr, length;
+	char* buffer = new char[255];
+	virtAddr = machine->ReadRegister(4); 
+	length = machine->ReadRegister(5); 
+
+	buffer = User2System(virtAddr, length); 
+
+	ptrSynchConsole->Read(buffer, length); 
+
+	System2User(virtAddr, length, buffer); 
+	delete buffer; 
+}
+
+void Exception_PrintString()
+{
+	int virtAddr, length = 0;
+	char* buffer;
+	virtAddr = machine->ReadRegister(4); 
+	buffer = User2System(virtAddr, 255); 
+
+	//Tinh do dai chuoi
+	while (buffer[length] != 0) length++;
+
+	ptrSynchConsole->Write(buffer, length + 1); 
+	delete buffer; 
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -195,7 +224,8 @@ ExceptionHandler(ExceptionType which)
         case SC_Halt:
             Exception_Halt();
             break;
-	case SC_Sub:
+        //code mau cong hai so
+        case SC_Sub:
             int op1, op2, result;
             op1 = machine->ReadRegister (4);
             op2 = machine->ReadRegister (5);
@@ -219,20 +249,21 @@ ExceptionHandler(ExceptionType which)
             Exception_PrintChar();
             Increase_ProgramCounter();
             break;
-        // case SC_RandomNum:
-        //     Increase_ProgramCounter();
-        //     break;
-        // case SC_ReadString:
-        //     Increase_ProgramCounter();
-        //     break;
-        // case SC_PrintString:
-        //     Increase_ProgramCounter();
-        //     break;
+        case SC_ReadString:
+            Exception_ReadString();
+            Increase_ProgramCounter();
+            break;
+        case SC_PrintString:
+            Exception_PrintString();
+            Increase_ProgramCounter();
+            break;
         default:
             printf("\n Unexpected user mode exception (%d %d)", which,
                 type);
             interrupt->Halt();
         }
+        break;
+
     case PageFaultException:
         DEBUG('a', "\nERROR. Can not run this program.......");
         printf("\nError. Can not run this program....... ");

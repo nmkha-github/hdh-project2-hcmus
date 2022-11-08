@@ -3,4 +3,5 @@
 int main()
 {
   PrintString("Test print string");
+  Halt();
 }

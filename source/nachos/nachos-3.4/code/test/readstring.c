@@ -2,9 +2,9 @@
 
 int main()
 {
-  char s[255];
+  char *s;
   int maxLength;
-  PrintString("Nhap do dai toi da cua xau (toi da 100): ");
+  PrintString("Nhap do dai toi da cua xau: ");
   maxLength = ReadInt();
   PrintString("Nhap xau: ");
   ReadString(s, maxLength);

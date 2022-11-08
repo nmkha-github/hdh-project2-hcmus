@@ -194,21 +194,14 @@ void Exception_PrintChar()
 
 void Exception_ReadString()
 {
-    int addr, length;
+    int addr, maxLength;
     char *buffer;
     addr = machine->ReadRegister(4);
-    length = machine->ReadRegister(5);
+    maxLength = machine->ReadRegister(5);
 
-    if (length > 255)
-    {
-        DEBUG('a', "\nERROR. string length too long......");
-        interrupt->Halt();
-    }
+    ptrSynchConsole->Read(buffer, maxLength);
 
-    ptrSynchConsole->Read(buffer, length);
-
-    System2User(addr, length, buffer);
-    delete[] buffer;
+    System2User(addr, maxLength, buffer);
 }
 
 void Exception_PrintString()

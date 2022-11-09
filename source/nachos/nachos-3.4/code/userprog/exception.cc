@@ -123,29 +123,48 @@ void Exception_ReadInt()
     const int maxlen = 11; // max len(int) = 11 do int: [-2147483648 , 2147483647]
     char num_string[maxlen] = {0};
     long long ret = 0;
-
-    for (int i = 0; i < maxlen; i++)
+    char c = ' ';
+    // remove front space
+    while (c == ' ' || c == '0')
     {
-        char c = 0; // biến lưu giá trị khi đọc từ console nhưng ở dạng char đọc từng ký tự
         ptrSynchConsole->Read(&c, 1);
-        if (c >= '0' && c <= '9')
-        {
-            num_string[i] = c;
-        }
-        else
-        {
-            if (i == 0 && c == '-')
-            {
-                num_string[i] = c;
-            }
-            else
-                break; // nếu nó khác số hoặc dấu - thì dừng đọc
-        }
     }
-    int i = (num_string[0] == '-') ? 1 : 0;
-    while (i < maxlen && num_string[i] >= '0' && num_string[i] <= '9') // chuyển từng ký tự sang số
-        ret = ret * 10 + num_string[i++] - '0';
-    ret = (num_string[0] == '-') ? (-ret) : ret;
+    int length = 0;
+    // check sign
+    bool sign = 0;
+    if (c == '-')
+    {
+        sign = 1;
+    }
+    else if (c == '+')
+    {
+        sign = 0;
+    }
+    else if (c >= '0' && c <= '9')
+    {
+        num_string[length] = c;
+        length++;
+    }
+
+    // read full number
+    ptrSynchConsole->Read(&c, 1);
+    while (c <= '9' && c >= '0' && length < maxlen)
+    {
+        num_string[length] = c;
+        length++;
+        ptrSynchConsole->Read(&c, 1);
+    }
+
+    for (int i = 0; i < length; i++)
+    {
+        ret = ret * 10 + 1ll * (num_string[i] - '0');
+    }
+    if (ret > 2147483647)
+    {
+        ret = 0;
+    }
+    ret = sign ? (-ret) : ret;
+
     machine->WriteRegister(2, (int)ret);
 }
 

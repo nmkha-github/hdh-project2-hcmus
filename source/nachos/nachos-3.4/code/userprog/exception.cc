@@ -271,43 +271,43 @@ void ExceptionHandler(ExceptionType which)
         return;
 
     case PageFaultException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nKhong tim thay dinh vi du lieu trong RAM. ");
+        printf("\n\nKhong tim thay dinh vi du lieu trong RAM. ");
         interrupt->Halt();
         return;
     case ReadOnlyException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nTrang dang co gang ghi vao duoc danh dau la 'chi doc'.");
+        printf("\n\nTrang dang co gang ghi vao duoc danh dau la 'chi doc'.");
         interrupt->Halt();
         return;
     case BusErrorException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nChuong trinh dang co truy cap bo nho khong the xac dinh dia chi vat ly.");
+        printf("\n\nChuong trinh dang co truy cap bo nho khong the xac dinh dia chi vat ly.");
         interrupt->Halt();
         return;
     case AddressErrorException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nChuong trinh dang tham chieu den mot khong gian dia chi bat hop phap.");
+        printf("\n\nChuong trinh dang tham chieu den mot khong gian dia chi bat hop phap.");
         interrupt->Halt();
         return;
     case OverflowException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nLoi tran so do phep tinh cong hoac tru.");
+        printf("\n\nLoi tran so do phep tinh cong hoac tru.");
         interrupt->Halt();
         return;
     case IllegalInstrException:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nLenh dang co gang thuc thi khong duoc ho tro.");
+        printf("\n\nLenh dang co gang thuc thi khong duoc ho tro.");
         interrupt->Halt();
         return;
     case NumExceptionTypes:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nChuong trinh gap loi ngoai le so.");
+        printf("\n\nChuong trinh gap loi ngoai le so.");
         interrupt->Halt();
         return;
     default:
-        DEBUG('a', "\nERROR. Can not run this program.......");
-        printf("\nError. Can not run this program....... ");
+        DEBUG('a', "\nChuong trinh gap loi ngoai le khong mong muon.");
+        printf("\n\nChuong trinh gap loi ngoai le khong mong muon.");
         return;
     }
 }

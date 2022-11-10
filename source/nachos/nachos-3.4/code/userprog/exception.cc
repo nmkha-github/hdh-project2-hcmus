@@ -125,7 +125,7 @@ void Exception_ReadInt()
     long long ret = 0;
     char c = ' ';
     // remove front space
-    while (c == ' ' || c == '0')
+    while (c == ' ')
     {
         ptrSynchConsole->Read(&c, 1);
     }
